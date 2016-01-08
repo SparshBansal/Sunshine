@@ -150,18 +150,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             String format = "json";
             String units = "metric";
             String num_days = "14";
+            String api_key = "4204728bc40e9259fef9d9514065d7fc";
 
             String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
             String QUERY_PARAM = "q";
             String MODE_PARAM = "mode";
             String UNITS_PARAM = "units";
             String COUNT_PARAM = "cnt";
+            String APPID_PARAM = "APPID";
 
             Uri weatherUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                     .appendQueryParameter(QUERY_PARAM, locationQuery)
                     .appendQueryParameter(MODE_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
-                    .appendQueryParameter(COUNT_PARAM, num_days).build();
+                    .appendQueryParameter(COUNT_PARAM, num_days)
+                    .appendQueryParameter(APPID_PARAM, api_key)
+                    .build();
 
             URL weatherForcastUrl = new URL(weatherUri.toString());
 

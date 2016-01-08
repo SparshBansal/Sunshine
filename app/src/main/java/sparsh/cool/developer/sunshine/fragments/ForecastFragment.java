@@ -9,6 +9,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,8 +64,7 @@ public class ForecastFragment extends Fragment implements
     String locationSetting;
     ItemClickListener mCallback;
     ForecastAdapter mArrayAdapter;
-    ListView forecastListView;
-
+    RecyclerView forecastRecyclerView;
     public ForecastFragment() {
         setHasOptionsMenu(true);
     }
@@ -92,22 +93,15 @@ public class ForecastFragment extends Fragment implements
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mArrayAdapter = new ForecastAdapter(getActivity(), null, 0);
-        forecastListView = (ListView) rootView.findViewById(R.id.listView_Forecast);
-        View emptyView =  rootView.findViewById(R.id.empty_textView);
+        mArrayAdapter = new ForecastAdapter(getActivity());
 
-        forecastListView.setEmptyView(emptyView);
-        forecastListView.setAdapter(mArrayAdapter);
+        // Using Recycler View instead of List View
+        forecastRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_forecast);
+        forecastRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        forecastRecyclerView.setAdapter(mArrayAdapter);
+
 
         updateWeather();
-
-        forecastListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                mCallback.OnItemClick(position, getDateText(position));
-            }
-        });
-
         return rootView;
     }
 
