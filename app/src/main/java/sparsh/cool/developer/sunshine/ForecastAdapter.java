@@ -24,10 +24,19 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
     private Cursor mCursor;
     private static final int VIEW_TYPE_TODAY = 0;
     private static final int VIEW_TYPE_FUTURE_DAY = 1;
+    final private ForecastAdapterOnClickHandler mClickHandler;
+    final private View emptyView;
 
+    // onClick Handler for managing the click events for our recycler view
+    public interface ForecastAdapterOnClickHandler {
+        public void ForecastAdapterOnClick(String date, ViewHolder viewHolder);
+    }
 
-    public ForecastAdapter(Context context) {
+    public ForecastAdapter(Context context,
+                           ForecastAdapterOnClickHandler mClickHandler, View emptyView) {
         mContext = context;
+        this.mClickHandler = mClickHandler;
+        this.emptyView = emptyView;
     }
 
 
@@ -37,14 +46,14 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
         if (parent instanceof RecyclerView) {
             int layoutId = -1;
             switch (viewType) {
-                case VIEW_TYPE_TODAY :
+                case VIEW_TYPE_TODAY:
                     layoutId = R.layout.list_item_forecast_today;
                     break;
-                case VIEW_TYPE_FUTURE_DAY :
+                case VIEW_TYPE_FUTURE_DAY:
                     layoutId = R.layout.list_item_forecast;
                     break;
             }
-            View view = LayoutInflater.from(mContext).inflate(layoutId,parent,false);
+            View view = LayoutInflater.from(mContext).inflate(layoutId, parent, false);
             view.setFocusable(true);
             return new ViewHolder(view);
         } else {
@@ -100,7 +109,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
     public int getItemCount() {
         if (mCursor == null) {
             return 0;
-        }else {
+        } else {
             return mCursor.getCount();
         }
     }
@@ -121,12 +130,26 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
+            // First get the dateString by positioning the cursor
+            final int position = getAdapterPosition();
+            mCursor.moveToPosition(position);
 
+            final String dateText = mCursor.getString(ForecastFragment.COL_DATETEXT);
+
+            // Trigger the onClick method of the handler
+            mClickHandler.ForecastAdapterOnClick(dateText, this);
         }
     }
 
     public void swapCursor(Cursor newCursor) {
         mCursor = newCursor;
+
+        // Based on the cursor count update the empty view's visibility setting
+        if (mCursor.getCount() == 0)
+            emptyView.setVisibility(View.VISIBLE);
+        else
+            emptyView.setVisibility(View.INVISIBLE);
+
         notifyDataSetChanged();
     }
 

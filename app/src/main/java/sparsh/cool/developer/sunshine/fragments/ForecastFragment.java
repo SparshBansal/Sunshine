@@ -15,8 +15,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -61,10 +59,12 @@ public class ForecastFragment extends Fragment implements
     public static final int COL_LOCATION_SETTING = 6;
 
 
-    String locationSetting;
-    ItemClickListener mCallback;
-    ForecastAdapter mArrayAdapter;
-    RecyclerView forecastRecyclerView;
+    private String locationSetting;
+    private ItemClickListener mCallback;
+    private ForecastAdapter mArrayAdapter;
+    private RecyclerView forecastRecyclerView;
+    private TextView emptyView;
+
     public ForecastFragment() {
         setHasOptionsMenu(true);
     }
@@ -93,7 +93,14 @@ public class ForecastFragment extends Fragment implements
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mArrayAdapter = new ForecastAdapter(getActivity());
+        // Get a reference to the empty textview and pass it in the constructor
+        emptyView = (TextView) rootView.findViewById(R.id.empty_textView);
+        mArrayAdapter = new ForecastAdapter(getActivity(), new ForecastAdapter.ForecastAdapterOnClickHandler() {
+            @Override
+            public void ForecastAdapterOnClick(String date, ForecastAdapter.ViewHolder viewHolder) {
+                mCallback.OnItemClick(viewHolder.getAdapterPosition(),date);
+            }
+        },emptyView);
 
         // Using Recycler View instead of List View
         forecastRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_forecast);
@@ -177,6 +184,7 @@ public class ForecastFragment extends Fragment implements
 
     public void updateWeather() {
         SyncAdapter.initializeSyncAdapter(getActivity());
+        SyncAdapter.syncImmediately(getActivity());
     }
 
 

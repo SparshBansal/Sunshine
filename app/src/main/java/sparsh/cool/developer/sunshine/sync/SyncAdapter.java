@@ -195,6 +195,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     forcastJsonStr = buffer.toString();
                     inputStream.close();
                     parseJson(forcastJsonStr, locationQuery);
+
+                    Log.d(LOG_TAG , forcastJsonStr);
                 }
             }
         } catch (MalformedURLException e) {
